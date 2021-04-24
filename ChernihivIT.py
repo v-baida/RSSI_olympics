@@ -4,7 +4,7 @@ import time
 import datetime
 import matplotlib.pyplot as plt
 
-input_file_name = 'F:/GitHub/RSSI_olympics/data-2-1.csv'
+input_file_name = 'F:/GitHub/RSSI_olympics/data-2-6.csv'
 output_file_name = input_file_name.split('/')
 output_file_name = output_file_name[3].split('.')
 output_file_name = output_file_name[0]
@@ -59,7 +59,7 @@ with open(input_file_name) as csv_file:
 
         b_sum = [0, 0, 0, 0, 0, 0]
         b_cnt = [0, 0, 0, 0, 0, 0]
-        b_avg = [0, 0, 0, 0, 0, 0]
+        b_avg = [-100]*6
 
         while i+j < len(data_list) and secs <= secs_start + 5:
 
@@ -75,6 +75,7 @@ with open(input_file_name) as csv_file:
             j = j+1
         
         i = i + i_jump
+
         for k in range(6):
             if b_cnt[k] != 0:
                 b_avg[k] = int(b_sum[k]/b_cnt[k])
@@ -95,6 +96,8 @@ with open(input_file_name) as csv_file:
             room_number = 3
         elif checkMaxIndices(max1, max2, 2, 1):
             room_number = 3
+        elif checkMaxIndices(max1, max2, 4, 6): #????
+            room_number = 2
         elif checkMaxIndices(max1, max2, 2, 5):
             room_number = 3 
 
@@ -104,15 +107,12 @@ with open(input_file_name) as csv_file:
             sensor_number = b_max_ind + 1
 
         line_to_write = "C%d" % room_number
-        # output_file.write("C%d" % room_number)
 
-        print(b_avg)
+        # print(b_avg)
 
         if sensor_number != 0:
-            # output_file.write(" B%d\n" % sensor_number)
             line_to_write = "%s B%d\n" % (line_to_write, sensor_number) 
         else:
-            # output_file.write("\n")
             line_to_write = "%s\n" % line_to_write
 
         if (line_to_write != line_to_write_prev):
