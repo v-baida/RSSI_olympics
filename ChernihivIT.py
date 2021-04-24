@@ -3,14 +3,26 @@ import re
 import time
 import datetime
 import matplotlib.pyplot as plt
+import cv2
+import os
 
-input_file_name = 'F:/GitHub/RSSI_olympics/data-2-6.csv'
+input_file_name = 'F:/GitHub/RSSI_olympics/data-2-1.csv'
 output_file_name = input_file_name.split('/')
 output_file_name = output_file_name[3].split('.')
 output_file_name = output_file_name[0]
 # print(output_file_name[3])
 
 output_file = open(f'F:/GitHub/RSSI_olympics/{output_file_name}.txt', 'w')
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+output = 'F:/GitHub/RSSI_olympics/video.mp4'
+out = cv2.VideoWriter(output, fourcc, 20.0, (320, 240))
+frame = cv2.imread('F:/GitHub/RSSI_olympics/photo_2021-04-24_10-06-26.jpg')
+out.write(frame)
+out.release()
+
+room_arr_for_plot = []
+time_arr_for_plot = []
 
 def getSeconds(obj):
     time_list = obj.split(":")
@@ -21,7 +33,6 @@ def getSeconds(obj):
     return int(seconds) + int(minutes) * 60
 
 def findTwoMaxIndices(obj):
-    # print(len(obj))
     temp = obj.copy()
     max1 = temp.index(max(temp)) 
     temp[max1] = -1000
@@ -97,18 +108,23 @@ with open(input_file_name) as csv_file:
         elif checkMaxIndices(max1, max2, 2, 1):
             room_number = 3
         elif checkMaxIndices(max1, max2, 4, 6): #????
-            room_number = 2
+            # room_number = 2
+            if b_avg[4] > b_avg[2]:
+                room_number = 2
+            else:
+                room_number = 1
         elif checkMaxIndices(max1, max2, 2, 5):
             room_number = 3 
 
         b_max_ind = b_avg.index(max(b_avg))
         
+        room_arr_for_plot.append(room_number)
+        time_arr_for_plot.append(getSeconds(data_list[i][2]))
+
         if b_avg[b_max_ind] > -52:
             sensor_number = b_max_ind + 1
 
         line_to_write = "C%d" % room_number
-
-        # print(b_avg)
 
         if sensor_number != 0:
             line_to_write = "%s B%d\n" % (line_to_write, sensor_number) 
@@ -117,7 +133,12 @@ with open(input_file_name) as csv_file:
 
         if (line_to_write != line_to_write_prev):
             output_file.write("%s" % line_to_write)
-        line_to_write_prev = line_to_write
+            line_to_write_prev = line_to_write
+
+    plt.plot(time_arr_for_plot, room_arr_for_plot)
+    # plt.axis([min(time_arr_for_plot),max(time_arr_for_plot),0,4])
+    plt.show()
+        
    
 
 
