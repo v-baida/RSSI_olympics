@@ -4,8 +4,7 @@ import time
 import datetime
 import matplotlib.pyplot as plt
 
-
-input_file_name = 'F:/GitHub/RSSI_olympics/data-2-1.csv'
+input_file_name = 'F:/GitHub/RSSI_olympics/data-2-6.csv'
 output_file_name = input_file_name.split('/')
 output_file_name = output_file_name[3].split('.')
 output_file_name = output_file_name[0]
@@ -13,8 +12,10 @@ output_file_name = output_file_name[0]
 
 output_file = open(f'F:/GitHub/RSSI_olympics/{output_file_name}.txt', 'w')
 
-window_width_s = 5
-window_step_s = 2
+window_width_s = 8
+window_step_s = 3
+
+sensor_treshold = -52
 
 room_arr_for_plot = []
 time_arr_for_plot = []
@@ -71,7 +72,7 @@ with open(input_file_name) as csv_file:
 
             secs = getSeconds(data_list[i+j][2])
 
-            if secs <= secs_start + window_step_s:
+            if secs <= secs_start + window_step_s+1:
                 i_jump = j
 
             ID = int(data_list[i+j][0])
@@ -117,7 +118,7 @@ with open(input_file_name) as csv_file:
         room_arr_for_plot.append(room_number)
         time_arr_for_plot.append(getSeconds(data_list[i][2]))
 
-        if b_avg[b_max_ind] > -52:
+        if b_avg[b_max_ind] > sensor_treshold:
             sensor_number = b_max_ind + 1
 
         line_to_write = "C%d" % room_number
