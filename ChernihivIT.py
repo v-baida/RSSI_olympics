@@ -3,8 +3,7 @@ import re
 import time
 import datetime
 import matplotlib.pyplot as plt
-import cv2
-import os
+
 
 input_file_name = 'F:/GitHub/RSSI_olympics/data-2-1.csv'
 output_file_name = input_file_name.split('/')
@@ -14,12 +13,8 @@ output_file_name = output_file_name[0]
 
 output_file = open(f'F:/GitHub/RSSI_olympics/{output_file_name}.txt', 'w')
 
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-output = 'F:/GitHub/RSSI_olympics/video.mp4'
-out = cv2.VideoWriter(output, fourcc, 20.0, (320, 240))
-frame = cv2.imread('F:/GitHub/RSSI_olympics/photo_2021-04-24_10-06-26.jpg')
-out.write(frame)
-out.release()
+window_width_s = 5
+window_step_s = 2
 
 room_arr_for_plot = []
 time_arr_for_plot = []
@@ -72,11 +67,11 @@ with open(input_file_name) as csv_file:
         b_cnt = [0, 0, 0, 0, 0, 0]
         b_avg = [-100]*6
 
-        while i+j < len(data_list) and secs <= secs_start + 5:
+        while i+j < len(data_list) and secs <= secs_start + window_width_s:
 
             secs = getSeconds(data_list[i+j][2])
 
-            if secs <= secs_start + 3:
+            if secs <= secs_start + window_step_s:
                 i_jump = j
 
             ID = int(data_list[i+j][0])
@@ -107,8 +102,7 @@ with open(input_file_name) as csv_file:
             room_number = 3
         elif checkMaxIndices(max1, max2, 2, 1):
             room_number = 3
-        elif checkMaxIndices(max1, max2, 4, 6): #????
-            # room_number = 2
+        elif checkMaxIndices(max1, max2, 4, 6): 
             if b_avg[4] > b_avg[2]:
                 room_number = 2
             else:
@@ -118,6 +112,8 @@ with open(input_file_name) as csv_file:
 
         b_max_ind = b_avg.index(max(b_avg))
         
+        print(b_avg)
+
         room_arr_for_plot.append(room_number)
         time_arr_for_plot.append(getSeconds(data_list[i][2]))
 
@@ -136,7 +132,6 @@ with open(input_file_name) as csv_file:
             line_to_write_prev = line_to_write
 
     plt.plot(time_arr_for_plot, room_arr_for_plot)
-    # plt.axis([min(time_arr_for_plot),max(time_arr_for_plot),0,4])
     plt.show()
         
    
