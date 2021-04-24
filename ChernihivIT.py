@@ -4,7 +4,7 @@ import time
 import datetime
 import matplotlib.pyplot as plt
 
-input_file_name = 'F:/GitHub/RSSI_olympics/data-2-6.csv'
+input_file_name = 'F:/GitHub/RSSI_olympics/data-1-1.csv'
 output_file_name = input_file_name.split('/')
 output_file_name = output_file_name[3].split('.')
 output_file_name = output_file_name[0]
@@ -12,9 +12,9 @@ output_file_name = output_file_name[0]
 
 output_file = open(f'F:/GitHub/RSSI_olympics/{output_file_name}.txt', 'w')
 
+#PARAMETERS FOR FILTERING 
 window_width_s = 8
 window_step_s = 3
-
 sensor_treshold = -52
 
 room_arr_for_plot = []
@@ -115,8 +115,14 @@ with open(input_file_name) as csv_file:
         
         print(b_avg)
 
+        
+        
+        plot_secs = getSeconds(data_list[i][2])
+        plot_mins = int(plot_secs/60)
+        plot_secs = plot_secs - plot_mins*60
+
         room_arr_for_plot.append(room_number)
-        time_arr_for_plot.append(getSeconds(data_list[i][2]))
+        time_arr_for_plot.append(f'%d:%d' % (plot_mins, plot_secs))
 
         if b_avg[b_max_ind] > sensor_treshold:
             sensor_number = b_max_ind + 1
